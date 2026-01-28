@@ -1,5 +1,5 @@
 flask
 tensorflow
-keras
 pillow
 numpy
+gunicorn

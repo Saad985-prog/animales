@@ -1,0 +1,49 @@
+
+<!doctype html>
+<html>
+<head>
+  <title>🐾 Mammals Classifier</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body style="font-family:Arial;text-align:center;background:#f4f6f8;padding-top:30px;">
+
+<h2>🐾 Mammals Classifier (45 Classes)</h2>
+
+<form method="post" enctype="multipart/form-data">
+  <input type="file" name="file"><br><br>
+  <button type="submit">Upload & Predict</button>
+</form>
+
+<h3>📸 Or use camera</h3>
+<video id="video" width="350" autoplay></video><br>
+<button id="snap">Capture</button>
+<canvas id="canvas" style="display:none;"></canvas>
+
+{% if prediction %}
+<h3>Top 3 Predictions</h3>
+<ul style="list-style:none;padding:0;">
+{% for cls, conf in prediction %}
+<li>{{cls}} - {{(conf*100)|round(2)}}%</li>
+{% endfor %}
+</ul>
+<img src="{{image_url}}" width="300" style="border-radius:10px;">
+{% endif %}
+
+<script>
+navigator.mediaDevices.getUserMedia({video:true})
+.then(s=>video.srcObject=s);
+
+snap.onclick = ()=>{
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video,0,0);
+  fetch("/",{
+    method:"POST",
+    headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    body:"webcam_image="+encodeURIComponent(canvas.toDataURL())
+  }).then(()=>location.reload());
+}
+</script>
+
+</body>
+</html>
